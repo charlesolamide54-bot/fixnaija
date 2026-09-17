@@ -126,7 +126,7 @@ function displayReports(reports) {
 
             try {
                 const response = await fetch(
-                    `http://localhost:5000/api/reports/${report.id}`,
+                    `https://fixnaija-backend-w90o.onrender.com/api/reports/${report.id}`,
                     {
                         method: "DELETE",
                         headers: {
@@ -154,7 +154,7 @@ function displayReports(reports) {
 
             try {
                 const response = await fetch(
-                    `http://localhost:5000/api/reports/${report.id}`,
+                    `https://fixnaija-backend-w90o.onrender.com/api/reports/${report.id}`,
                     {
                         method: "PUT",
                         headers: {
@@ -185,7 +185,7 @@ function displayReports(reports) {
     });
 }
 
-fetch("http://localhost:5000/api/reports")
+fetch("https://fixnaija-backend-w90o.onrender.com/api/reports")
     .then(response => response.json())
     .then(reports => {
         allReports = reports;

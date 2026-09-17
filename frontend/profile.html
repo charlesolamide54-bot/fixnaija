@@ -61,7 +61,7 @@
         </div>
     `;
 
-    fetch("http://localhost:5000/api/my-reports", {
+    fetch("https://fixnaija-backend-w90o.onrender.com/api/my-reports", {
         headers: {
             "Authorization": "Bearer " + token
         }
@@ -110,7 +110,7 @@ card.addEventListener("click", () => {
         console.error(error);
     });
 
-fetch("http://localhost:5000/api/notifications/unread-count", {
+fetch("https://fixnaija-backend-w90o.onrender.com/api/notifications/unread-count", {
     headers: {
         "Authorization": "Bearer " + token
     }

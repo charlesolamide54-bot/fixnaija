@@ -84,7 +84,7 @@ if (user && user.role === "admin") {
         const params = new URLSearchParams(window.location.search);
         const id = params.get("id");
 
-fetch(`http://localhost:5000/api/reports/${id}`)
+fetch(`https://fixnaija-backend-w90o.onrender.com/api/reports/${id}`)
     .then(response => response.json())
     .then(report => {
 
@@ -98,7 +98,7 @@ reportContainer.innerHTML = `
 
         ${report.image_url ? `
             <img
-                src="http://localhost:5000${report.image_url}"
+                src="https://fixnaija-backend-w90o.onrender.com${report.image_url}"
                 alt="Report photo"
                 class="report-image"
             >
@@ -130,7 +130,7 @@ if (report.latitude && report.longitude) {
                 console.error(error);
                 reportContainer.textContent = "Failed to load report.";
             });
-	fetch(`http://localhost:5000/api/reports/${id}/history`)
+	fetch(`https://fixnaija-backend-w90o.onrender.com/api/reports/${id}/history`)
     .then(response => response.json())
     .then(history => {
         history.forEach(item => {
@@ -161,7 +161,7 @@ updateButton.addEventListener("click", async () => {
     const newStatus = statusSelect.value;
 
     try {
-        const response = await fetch(`http://localhost:5000/api/reports/${id}`, {
+        const response = await fetch(`https://fixnaija-backend-w90o.onrender.com/api/reports/${id}`, {
             method: "PUT",
             headers: {
     "Content-Type": "application/json",
@@ -192,7 +192,7 @@ updateButton.addEventListener("click", async () => {
 const upvoteButton = document.getElementById("upvoteButton");
 const upvoteCount = document.getElementById("upvoteCount");
 
-fetch(`http://localhost:5000/api/reports/${id}/upvotes`)
+fetch(`https://fixnaija-backend-w90o.onrender.com/api/reports/${id}/upvotes`)
     .then(response => response.json())
     .then(data => {
         upvoteCount.textContent = data.count;
@@ -201,7 +201,7 @@ fetch(`http://localhost:5000/api/reports/${id}/upvotes`)
         console.error(error);
     });
 
-fetch(`http://localhost:5000/api/reports/${id}/upvoted`, {
+fetch(`https://fixnaija-backend-w90o.onrender.com/api/reports/${id}/upvoted`, {
     headers: {
         "Authorization": "Bearer " + localStorage.getItem("token")
     }
@@ -220,7 +220,7 @@ fetch(`http://localhost:5000/api/reports/${id}/upvoted`, {
 upvoteButton.addEventListener("click", async () => {
     try {
         const response = await fetch(
-            `http://localhost:5000/api/reports/${id}/upvote`,
+            `https://fixnaija-backend-w90o.onrender.com/api/reports/${id}/upvote`,
             {
                 method: "POST",
                 headers: {
@@ -249,7 +249,7 @@ upvoteButton.addEventListener("click", async () => {
 
 const commentsList = document.getElementById("commentsList");
 
-fetch(`http://localhost:5000/api/reports/${id}/comments`)
+fetch(`https://fixnaija-backend-w90o.onrender.com/api/reports/${id}/comments`)
     .then(response => response.json())
     .then(comments => {
         commentsList.innerHTML = "";
@@ -285,7 +285,7 @@ commentForm.addEventListener("submit", async (event) => {
 
     try {
         const response = await fetch(
-            `http://localhost:5000/api/reports/${id}/comments`,
+            `https://fixnaija-backend-w90o.onrender.com/api/reports/${id}/comments`,
             {
                 method: "POST",
                 headers: {
