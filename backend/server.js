@@ -46,13 +46,16 @@ app.use(express.json());
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-const pool = new Pool({
-    user: "postgres",
-    password: "postgres",
-    host: "localhost",
-    database: "fixnaija",
-    port: 5432
-});
+
+const pool = new Pool(
+    process.env.DATABASE_URL
+        ? { connectionString: process.env.DATABASE_URL }
+        : {
+            host: "localhost",
+            database: "fixnaija",
+            port: 5432
+        }
+);
 
 app.get("/", (req, res) => {
     res.json({
