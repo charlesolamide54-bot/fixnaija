@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FixNaija</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+	<header class="site-header">
+    <div>
+        <h1>FixNaija</h1>
+        <p>Report problems. Improve your community.</p>
+    </div>
+
+    <button id="logoutButton">Logout</button>
+<a href="profile.html">My Profile</a>
+</header>
+<p id="userWelcome" class="welcome-message"></p>
+
+	<h2>Report a Community Issue</h2>
+<p class="form-intro">
+    Tell us about a problem in your community so it can be tracked.
+</p>
+    <form id="reportForm">
+<label for="image">Add a photo</label>
+<input
+    type="file"
+    id="image"
+    accept="image/*"
+>
+        <input id="title" type="text" placeholder="Report title" required>
+        <br><br>
+
+        <textarea id="description" placeholder="Describe the problem" required></textarea>
+        <br><br>
+
+        <input id="category" type="text" placeholder="Category" required>
+        <br><br>
+
+        <input id="location" type="text" placeholder="Location" required>
+	<button type="button" id="locationButton">
+    📍 Use My Current Location
+</button>
+        <br><br>
+
+	<button type="submit" id="submitButton">Submit Report</button>
+    </form>
+
+    <p id="message"></p>
+	<h2>My Reports</h2>
+
+<div id="reports"></div>
+
+    <script>
+document.getElementById("logoutButton").addEventListener("click", () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    window.location.href = "login.html";
+});
+const token = localStorage.getItem("token");
+const user = JSON.parse(localStorage.getItem("user"));
+
+if (!token || !user) {
+    window.location.href = "login.html";
+} else {
+    document.getElementById("userWelcome").textContent =
+        "Welcome, " + user.username;
+}
+
+const reportsContainer = document.getElementById("reports");
+
+fetch("http://localhost:5000/api/my-reports", {
+    headers: {
+        "Authorization": "Bearer " + token
+    }
+})
+    .then(response => response.json())
+    .then(reports => {
+        reports.forEach(report => {
+            const reportElement = document.createElement("div");
+		reportElement.classList.add("report-card");
+		reportElement.addEventListener("click", () => {
+    window.location.href = `report.html?id=${report.id}`;
+});
+
+            reportElement.innerHTML = `
+                <h3>${report.title}</h3>
+                <p>${report.description}</p>
+                <p>Category: ${report.category}</p>
+                <p>Location: ${report.location}</p>
+		<p class="status ${report.status.toLowerCase().replace(" ", "-")}">
+    Status: ${report.status}
+</p>
+                <hr>
+            `;
+
+            reportsContainer.appendChild(reportElement);
+        });
+    })
+    .catch(error => {
+        console.error("GET ERROR:", error);
+    });
+        const form = document.getElementById("reportForm");
+	const locationButton = document.getElementById("locationButton");
+	const submitButton = document.getElementById("submitButton");
+
+let latitude = null;
+let longitude = null;
+
+locationButton.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+        alert("Location is not supported on this device.");
+        return;
+    }
+
+    locationButton.textContent = "📍 Getting location...";
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+
+		document.getElementById("location").value =
+    `${latitude}, ${longitude}`;
+
+            locationButton.textContent = "📍 Location Added";
+
+            console.log("Latitude:", latitude);
+            console.log("Longitude:", longitude);
+        },
+        (error) => {
+            console.error(error);
+            locationButton.textContent = "📍 Use My Current Location";
+            alert("Could not get your location.");
+        }
+    );
+});
+        const message = document.getElementById("message");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+const formData = new FormData();
+
+formData.append(
+    "title",
+    document.getElementById("title").value
+);
+
+formData.append(
+    "description",
+    document.getElementById("description").value
+);
+
+formData.append(
+    "category",
+    document.getElementById("category").value
+);
+
+formData.append(
+    "location",
+    document.getElementById("location").value
+);
+
+formData.append("latitude", latitude || "");
+formData.append("longitude", longitude || "");
+
+const imageFile = document.getElementById("image").files[0];
+
+if (imageFile) {
+    formData.append("image", imageFile);
+}
+
+try {
+    message.classList.remove("error-message");
+    message.textContent = "";
+
+    submitButton.textContent = "Submitting...";
+    submitButton.disabled = true;
+
+    const response = await fetch("http://localhost:5000/api/reports", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + token
+        },
+        body: formData
+    });
+
+    console.log("Response status:", response.status);
+
+    const data = await response.json();
+
+    if (response.ok) {
+        form.reset();
+        message.textContent = "Report submitted successfully!";
+
+        submitButton.textContent = "Report Submitted!";
+        submitButton.disabled = true;
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+
+    } else {
+        message.textContent = "Failed to submit report.";
+        console.error(data);
+
+        submitButton.textContent = "Submit Report";
+        submitButton.disabled = false;
+    }
+
+} catch (error) {
+    console.error("POST ERROR:", error);
+
+    message.textContent = "Error: " + error.message;
+    message.classList.add("error-message");
+
+    submitButton.textContent = "Submit Report";
+    submitButton.disabled = false;
+}
+
+        });
+    </script>
+
+</body>
+</html>

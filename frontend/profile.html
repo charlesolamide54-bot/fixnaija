@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - FixNaija</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a id="backLink" href="index.html">← Back</a>
+
+<div class="profile-header">
+
+    <h1>My Profile</h1>
+
+    <button id="notificationButton">
+        🔔 <span id="notificationCount">0</span>
+    </button>
+
+</div>
+
+    <p class="page-subtitle">View your FixNaija activity.</p>
+
+    <div id="profile"></div>
+
+<div id="stats">
+    <div class="report-card">
+        <h3>Total Reports</h3>
+        <p id="totalReports">0</p>
+    </div>
+
+    <div class="report-card">
+        <h3>Active Reports</h3>
+        <p id="activeReports">0</p>
+    </div>
+
+    <div class="report-card">
+        <h3>Resolved Reports</h3>
+        <p id="resolvedReports">0</p>
+    </div>
+</div>
+
+    <h2>My Reports</h2>
+    <div id="reports"></div>
+
+    <br>
+
+<script>
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!token || !user) {
+        window.location.href = "login.html";
+    }
+
+    document.getElementById("profile").innerHTML = `
+        <div class="report-card">
+            <h2>${user.username}</h2>
+            <p>Account type: ${user.role}</p>
+        </div>
+    `;
+
+    fetch("http://localhost:5000/api/my-reports", {
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    })
+    .then(response => response.json())
+    .then(reports => {
+	document.getElementById("totalReports").textContent = reports.length;
+
+const resolved = reports.filter(
+    report => report.status === "Resolved"
+).length;
+
+const active = reports.length - resolved;
+
+document.getElementById("resolvedReports").textContent = resolved;
+document.getElementById("activeReports").textContent = active;
+    
+    const reportsContainer = document.getElementById("reports");
+
+        if (reports.length === 0) {
+            reportsContainer.innerHTML = "<p>You have not submitted any reports yet.</p>";
+            return;
+        }
+
+        reports.forEach(report => {
+            const card = document.createElement("div");
+
+            card.classList.add("report-card");
+
+	card.innerHTML = `
+    <h3>${report.title}</h3>
+    <p>${report.description}</p>
+    <p>Status: ${report.status}</p>
+`;
+
+card.style.cursor = "pointer";
+
+card.addEventListener("click", () => {
+    window.location.href = `report.html?id=${report.id}`;
+});
+
+            reportsContainer.appendChild(card);
+        });
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+fetch("http://localhost:5000/api/notifications/unread-count", {
+    headers: {
+        "Authorization": "Bearer " + token
+    }
+})
+.then(response => response.json())
+.then(data => {
+    document.getElementById("notificationCount").textContent = data.count;
+})
+.catch(error => {
+    console.error("Notification count error:", error);
+});
+
+document.getElementById("notificationButton").addEventListener("click", () => {
+    window.location.href = "notifications.html";
+});
+
+</script>
+
+</body>
+</html>

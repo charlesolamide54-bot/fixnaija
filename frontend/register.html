@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FixNaija Register</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+	<div class="auth-container">
+    <h1>FixNaija</h1>
+    <p class="auth-subtitle">Create your account</p>
+    <p class="auth-description">
+        Join FixNaija and help improve your community.
+    </p>
+
+    <form id="registerForm">
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Username"
+            required
+        >
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            required
+        >
+
+        <button type="submit">Register</button>
+
+    </form>
+
+    <p id="message"></p>
+	<p class="auth-link">
+    Already have an account?
+    <a href="login.html">Log in</a>
+</p>
+
+</div>
+
+    <script>
+        const registerForm = document.getElementById("registerForm");
+        const message = document.getElementById("message");
+
+        registerForm.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+            const username =
+                document.getElementById("username").value;
+
+            const password =
+                document.getElementById("password").value;
+
+            try {
+
+                const response = await fetch(
+                    "http://localhost:5000/api/register",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (response.ok) {
+
+                    message.textContent =
+                        "Registration successful! You can now log in.";
+
+                    registerForm.reset();
+
+                } else {
+
+                    message.textContent = data.message;
+
+                }
+
+            } catch (error) {
+
+                message.textContent =
+                    "Failed to connect to the server.";
+
+            }
+
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - FixNaija</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a id="backLink" href="profile.html">← Back</a>
+
+    <h1>Notifications</h1>
+    <p class="page-subtitle">Updates about your reports.</p>
+
+    <div id="notifications"></div>
+
+    <br>
+
+<script>
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        window.location.href = "login.html";
+    }
+
+    fetch("http://localhost:5000/api/notifications", {
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    })
+    .then(response => response.json())
+    .then(notifications => {
+        const container = document.getElementById("notifications");
+
+        if (notifications.length === 0) {
+            container.innerHTML = "<p>No notifications yet.</p>";
+            return;
+        }
+
+notifications.forEach(notification => {
+    const item = document.createElement("div");
+
+    item.classList.add("notification");
+
+    item.innerHTML = `
+        <p>${notification.message}</p>
+        <small>${notification.created_at}</small>
+    `;
+
+    container.appendChild(item);
+
+    fetch(`http://localhost:5000/api/notifications/${notification.id}/read`, {
+        method: "PUT",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
+});
+    })
+    .catch(error => {
+        console.error("Notification error:", error);
+    });
+</script>
+
+</body>
+</html>

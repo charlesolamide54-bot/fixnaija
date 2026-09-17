@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FixNaija Report</title>
+    <link rel="stylesheet" href="style.css">
+	<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+	<a id="backLink" href="index.html">← Back</a>
+
+    <h1>Report Details</h1>
+<p class="page-subtitle">
+    Track the progress of this community report.
+</p>
+
+<div id="report"></div>
+
+<div id="upvotes">
+    <button id="upvoteButton">👍 Upvote</button>
+    <span id="upvoteCount">0</span> upvotes
+</div>
+
+<div id="updateStatus">
+    <label for="status">Update Status:</label>
+
+    <select id="status">
+        <option value="Reported">Reported</option>
+        <option value="Verified">Verified</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Resolved">Resolved</option>
+    </select>
+
+    <button id="updateButton">Update Status</button>
+
+    <p id="updateMessage"></p>
+</div>
+
+<div id="comments">
+    <h2>Comments</h2>
+
+    <div id="commentsList"></div>
+
+    <form id="commentForm">
+        <textarea
+            id="commentInput"
+            placeholder="Write a comment..."
+            required
+        ></textarea>
+
+        <button type="submit">Post Comment</button>
+    </form>
+
+    <p id="commentMessage"></p>
+</div>
+
+<div id="map"></div>
+
+<div id="history">
+    <h2>Status History</h2>
+    <div id="historyList"></div>
+</div>
+
+<br>
+
+    <script>
+	const backLink = document.getElementById("backLink");
+const user = JSON.parse(localStorage.getItem("user"));
+
+if (user && user.role === "admin") {
+    backLink.href = "admin.html";
+    backLink.textContent = "← Back to Admin Reports";
+}
+
+        const reportContainer = document.getElementById("report");
+	const historyList = document.getElementById("historyList");
+
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+
+fetch(`http://localhost:5000/api/reports/${id}`)
+    .then(response => response.json())
+    .then(report => {
+
+reportContainer.innerHTML = `
+    <div class="report-card">
+        <h2>${report.title}</h2>
+        <p>${report.description}</p>
+        <p>Category: ${report.category}</p>
+        <p>Location: ${report.location}</p>
+        <p id="reportStatus">Status: ${report.status}</p>
+
+        ${report.image_url ? `
+            <img
+                src="http://localhost:5000${report.image_url}"
+                alt="Report photo"
+                class="report-image"
+            >
+        ` : ""}
+    </div>
+`;
+
+if (report.latitude && report.longitude) {
+    const map = L.map("map").setView(
+        [report.latitude, report.longitude],
+        15
+    );
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    L.marker([report.latitude, report.longitude])
+        .addTo(map)
+        .bindPopup("Reported location")
+        .openPopup();
+} else {
+    document.getElementById("map").innerHTML =
+        "<p>Location coordinates not available.</p>";
+}
+
+            })
+            .catch(error => {
+                console.error(error);
+                reportContainer.textContent = "Failed to load report.";
+            });
+	fetch(`http://localhost:5000/api/reports/${id}/history`)
+    .then(response => response.json())
+    .then(history => {
+        history.forEach(item => {
+            const historyItem = document.createElement("p");
+
+            historyItem.textContent =
+                `${item.status} — ${new Date(item.changed_at).toLocaleString()}`;
+
+            historyList.appendChild(historyItem);
+        });
+    })
+    .catch(error => {
+        console.error(error);
+        historyList.textContent = "Failed to load status history.";
+    });
+
+const updateStatus = document.getElementById("updateStatus");
+
+if (!user || user.role !== "admin") {
+    updateStatus.style.display = "none";
+}
+
+	const updateButton = document.getElementById("updateButton");
+const statusSelect = document.getElementById("status");
+const updateMessage = document.getElementById("updateMessage");
+
+updateButton.addEventListener("click", async () => {
+    const newStatus = statusSelect.value;
+
+    try {
+        const response = await fetch(`http://localhost:5000/api/reports/${id}`, {
+            method: "PUT",
+            headers: {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + localStorage.getItem("token")
+},
+            body: JSON.stringify({
+                status: newStatus
+            })
+        });
+
+        const updatedReport = await response.json();
+
+	if (response.ok) {
+    updateMessage.textContent = "Status updated successfully!";
+
+    document.getElementById("reportStatus").textContent =
+        "Status: " + updatedReport.status;
+        } else {
+            updateMessage.textContent = updatedReport.message;
+        }
+
+    } catch (error) {
+        console.error(error);
+        updateMessage.textContent = "Failed to update status.";
+    }
+});
+
+const upvoteButton = document.getElementById("upvoteButton");
+const upvoteCount = document.getElementById("upvoteCount");
+
+fetch(`http://localhost:5000/api/reports/${id}/upvotes`)
+    .then(response => response.json())
+    .then(data => {
+        upvoteCount.textContent = data.count;
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+fetch(`http://localhost:5000/api/reports/${id}/upvoted`, {
+    headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+    }
+})
+    .then(response => response.json())
+    .then(data => {
+        if (data.upvoted) {
+            upvoteButton.textContent = "👍 Upvoted";
+            upvoteButton.disabled = true;
+        }
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+upvoteButton.addEventListener("click", async () => {
+    try {
+        const response = await fetch(
+            `http://localhost:5000/api/reports/${id}/upvote`,
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+            upvoteCount.textContent =
+                Number(upvoteCount.textContent) + 1;
+
+            upvoteButton.textContent = "👍 Upvoted";
+            upvoteButton.disabled = true;
+        } else {
+            alert(data.message);
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("Failed to upvote report.");
+    }
+});
+
+const commentsList = document.getElementById("commentsList");
+
+fetch(`http://localhost:5000/api/reports/${id}/comments`)
+    .then(response => response.json())
+    .then(comments => {
+        commentsList.innerHTML = "";
+
+        if (comments.length === 0) {
+            commentsList.innerHTML = "<p>No comments yet.</p>";
+            return;
+        }
+
+        comments.forEach(comment => {
+            const commentElement = document.createElement("div");
+
+            commentElement.classList.add("report-card");
+
+            commentElement.innerHTML = `
+                <strong>${comment.username}</strong>
+                <p>${comment.comment}</p>
+                <small>${new Date(comment.created_at).toLocaleString()}</small>
+            `;
+
+            commentsList.appendChild(commentElement);
+        });
+    })
+    .catch(error => {
+        console.error(error);
+    });
+const commentForm = document.getElementById("commentForm");
+const commentInput = document.getElementById("commentInput");
+const commentMessage = document.getElementById("commentMessage");
+
+commentForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    try {
+        const response = await fetch(
+            `http://localhost:5000/api/reports/${id}/comments`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                },
+                body: JSON.stringify({
+                    comment: commentInput.value
+                })
+            }
+        );
+
+        const data = await response.json();
+
+	if (response.ok) {
+    commentMessage.textContent = "Comment posted successfully!";
+
+    const commentElement = document.createElement("div");
+    commentElement.classList.add("report-card");
+
+    commentElement.innerHTML = `
+        <strong>${JSON.parse(localStorage.getItem("user")).username}</strong>
+        <p>${commentInput.value}</p>
+        <small>${new Date().toLocaleString()}</small>
+    `;
+
+    commentsList.appendChild(commentElement);
+
+    commentInput.value = "";
+        } else {
+            commentMessage.textContent = data.message;
+        }
+
+    } catch (error) {
+        console.error(error);
+        commentMessage.textContent = "Failed to post comment.";
+    }
+});
+    </script>
+
+</body>
+</html>

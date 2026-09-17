@@ -1,0 +1,512 @@
+#reports {
+    margin-top: 20px;
+    max-width: 700px;
+}
+
+.status {
+    font-weight: bold;
+}
+
+.reported {
+    color: #b8860b;
+}
+
+.verified {
+    color: #1976d2;
+}
+
+.in-progress {
+    color: #f57c00;
+}
+
+.resolved {
+    color: #2e7d32;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    color: #1f2937;
+    margin: 0;
+    padding: 30px 20px;
+}
+
+h1 {
+    color: #0f766e;
+    margin-bottom: 8px;
+}
+
+h2 {
+    color: #111827;
+    margin-top: 30px;
+}
+
+button {
+    background: #0f766e;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background: #115e59;
+    transform: translateY(-1px);
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-top: 6px;
+    margin-bottom: 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+    background: white;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #0f766e;
+}
+
+.report-card {
+    background: white;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.report-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10);
+}
+
+.report-card h2,
+.report-card h3 {
+    margin-top: 0;
+    color: #111827;
+}
+
+.report-card p {
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+.status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #e0f2f1;
+    color: #0f766e;
+}
+
+#history {
+    margin-top: 30px;
+}
+
+#history h2 {
+    margin-bottom: 15px;
+}
+
+#historyList {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+#historyList p {
+    margin: 0;
+    padding: 14px 0;
+    border-bottom: 1px solid #e5e7eb;
+    color: #374151;
+}
+
+#historyList p:last-child {
+    border-bottom: none;
+}
+
+#reportForm {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    margin-top: 20px;
+    max-width: 700px;
+}
+
+#reportForm label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#updateMessage {
+    margin-top: 12px;
+    font-weight: bold;
+    color: #0f766e;
+}#message,
+#updateMessage {
+    margin-top: 12px;
+    font-weight: bold;
+    color: #0f766e;
+}
+
+.error-message {
+    color: #b91c1c;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 15px 10px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .report-card {
+        padding: 16px;
+    }
+
+    input,
+    textarea,
+    select {
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.site-header p {
+    margin: 5px 0 0;
+    color: #6b7280;
+}
+
+.site-header button {
+    width: auto;
+    white-space: nowrap;
+}
+
+.form-intro {
+    color: #6b7280;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.status.reported {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status.verified {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status.in-progress {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.status.resolved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+#historyList {
+    position: relative;
+    padding-left: 25px;
+}
+
+#historyList p {
+    position: relative;
+    padding-left: 15px;
+}
+
+#historyList p::before {
+    content: "";
+    position: absolute;
+    left: -12px;
+    top: 18px;
+    width: 9px;
+    height: 9px;
+    background: #0f766e;
+    border-radius: 50%;
+}
+
+#historyList p::after {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 28px;
+    width: 1px;
+    height: calc(100% - 10px);
+    background: #d1d5db;
+}
+
+#historyList p:last-child::after {
+    display: none;
+}
+
+.page-subtitle {
+    color: #6b7280;
+    margin-top: -5px;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+#report {
+    margin-bottom: 30px;
+}
+
+#updateStatus {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+#updateStatus label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+a {
+    color: #0f766e;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+#report .report-card {
+    border-left: 4px solid #0f766e;
+}
+
+#updateStatus button {
+    margin-top: 5px;
+}
+
+#updateMessage {
+    min-height: 20px;
+}
+
+.status-select {
+    margin-top: 10px;
+}
+
+.update-button {
+    margin-top: 5px;
+    width: auto;
+}
+
+.site-header + a {
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.auth-container {
+    max-width: 420px;
+    margin: 60px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.auth-container h1 {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 25px;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #6b7280;
+}
+
+.auth-description {
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: -15px;
+    margin-bottom: 25px;
+}
+
+.welcome-message {
+    color: #374151;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 20px;
+}
+
+@media (max-width: 600px) {
+    .site-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .site-header button {
+        width: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .report-card {
+        margin: 12px 0;
+    }
+
+    .report-card h3 {
+        font-size: 20px;
+    }
+}
+
+.admin-label {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 10px 0 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    color: #6b7280;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.status-controls {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.report-image {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    display: block;
+    margin: 15px auto;
+    border-radius: 10px;
+}
+
+#map {
+    width: 100%;
+    height: 350px;
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+#notificationButton {
+    width: auto;
+    padding: 6px 10px;
+    margin: 0;
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+#notifications {
+    width: 100%;
+    margin-top: 10px;
+}
+
+#notifications .notification {
+    background: #FFF8F0;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    border-left: 3px solid #602010;
+}
+
+#notifications .notification p {
+    margin: 0 0 5px;
+    font-size: 14px;
+}
+
+#notifications .notification small {
+    color: #777;
+    font-size: 12px;
+}
+
+#notificationCount {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 10px;
+    background: #602010;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    vertical-align: top;
+}
+
+#backLink {
+    display: inline-block;
+    margin-bottom: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 18px;
+}
+
